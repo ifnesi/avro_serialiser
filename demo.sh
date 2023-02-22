@@ -10,8 +10,7 @@ else
 fi
 QTY=$(( $QTY < 1 ? 1 : $QTY ))
 
-echo
-echo "*** Avro weather schema ***"
+echo "Avro weather schema:"
 cat schemas/weather.avro
 echo
 read -p "Press any key to see $QTY random input message(s) based on the Avro weather schema..."

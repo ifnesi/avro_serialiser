@@ -1,4 +1,8 @@
 _venv
-__pycache__
 
+__pycache__
 *.pyc
+
+input.json
+output.avsc
+stats.txt
