@@ -1,0 +1,28 @@
+{
+    "name": "BoolOnly",
+    "namespace": "com.example",
+    "doc": "All boolean data",
+    "type": "record",
+    "fields": [
+        {
+            "name": "opt1",
+            "type": "boolean"
+        },
+        {
+            "name": "opt2",
+            "type": "boolean"
+        },
+        {
+            "name": "opt3",
+            "type": "boolean"
+        },
+        {
+            "name": "opt4",
+            "type": "boolean"
+        },
+        {
+            "name": "opt5",
+            "type": "boolean"
+        }
+    ]
+}

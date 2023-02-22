@@ -1,0 +1,29 @@
+{
+    "name": "StringOnly",
+    "namespace": "com.example",
+    "doc": "All string data",
+    "type": "record",
+    "fields": [
+        {
+            "name": "user_id",
+            "type": "string",
+            "logicalType": "uuid"
+        },
+        {
+            "name": "address",
+            "type": "string"
+        },
+        {
+            "name": "postcode",
+            "type": "string"
+        },
+        {
+            "name": "first_name",
+            "type": "string"
+        },
+        {
+            "name": "last_name",
+            "type": "string"
+        }
+    ]
+}

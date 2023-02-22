@@ -1,0 +1,29 @@
+{
+    "name": "IntOnly",
+    "namespace": "com.example",
+    "doc": "All integer data",
+    "type": "record",
+    "fields": [
+        {
+            "name": "user_id",
+            "type": "int"
+        },
+        {
+            "name": "timestamp",
+            "type": "int",
+            "logicalType": "time-millis"
+        },
+        {
+            "name": "zipcode",
+            "type": "int"
+        },
+        {
+            "name": "age",
+            "type": "int"
+        },
+        {
+            "name": "house_number",
+            "type": "int"
+        }
+    ]
+}

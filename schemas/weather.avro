@@ -1,0 +1,29 @@
+{
+    "name": "Weather",
+    "namespace": "com.example",
+    "doc": "My weather station",
+    "type": "record",
+    "fields": [
+        {
+            "name": "station",
+            "type": "string"
+        },
+        {
+            "name": "station_id",
+            "type": "long"
+        },
+        {
+            "name": "timestamp",
+            "type": "long",
+            "logicalType": "timestamp-millis"
+        },
+        {
+            "name": "temp",
+            "type": "double"
+        },
+        {
+            "name": "active",
+            "type": "boolean"
+        }
+    ]
+}

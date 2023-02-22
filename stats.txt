@@ -1,0 +1,14 @@
+
+Record(s) serialised: 1
+
+Input records:
+- Total: 104 bytes
+- Average per record: 104.00 bytes
+
+Avro serialised/encoded records:
+- Total: 412 bytes
+- Record average size with Avro schema: 412.00 bytes
+  > Compress ratio: -296.15%
+- Record average size without Avro schema: 24.00 bytes
+  > Compress ratio: 76.92%
+
