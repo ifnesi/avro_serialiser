@@ -1,8 +1,9 @@
 _venv
-
 __pycache__
 *.pyc
+.DS_Store
 
 input.json
 output.avsc
 stats.txt
+demo_sr.sh

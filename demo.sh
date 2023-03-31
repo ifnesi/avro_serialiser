@@ -28,4 +28,3 @@ echo
 read -p "Press any key to compare raw input with Avro serialised output..."
 
 cat stats.txt
-echo
