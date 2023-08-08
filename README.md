@@ -1,19 +1,6 @@
 # avro_serialiser
 
-Basic Avro serialiser using Python:
-```
-usage: avro_serialiser.py [-h] [--qty RECORDS] [--schema SCHEMA] [--output OUTPUT] [--input INPUT] [--stats]
-
-AVRO encoder
-
-options:
-  -h, --help       show this help message and exit
-  --qty RECORDS    Quantity of input records to be randomised (based on the Avro schema)
-  --schema SCHEMA  Avro schema file name
-  --output OUTPUT  Filename where the encoded Avro data should be dumped to
-  --input INPUT    Filename where the randomised input data should be dumped to
-  --stats          Display statistics
-```
+Avro serialiser/deserialiser using Python and Confluent AVRO SerDes lib (`confluent_kafka.schema_registry.avro`):
 
 ## Installation and Configuration
 - Python +3.8 required
@@ -25,17 +12,44 @@ options:
 - Install project requirements: ```python3 -m pip install -f requirements.txt```
 - Deactivate the virtual environment: ```deactivate```
 
-## Running the demo:
-- Run the shell script: ```./demo.sh X```
-- Where X (Optional):
+## AVRO Serialiser
+```
+usage: avro_ser.py [-h] [--qty RECORDS] [--schema SCHEMA] [--stats] [--print] [--save] [--config CONFIG]
+
+AVRO serialiser
+
+options:
+  -h, --help       show this help message and exit
+  --qty RECORDS    Quantity of input records to be randomised (based on the Avro schema)
+  --config CONFIG  Configuration file to access the Schema Registry cluster (default 'config/test.ini')
+  --schema SCHEMA  Avro schema file path
+  --stats          Display statistics
+  --print          Print messages in the console
+  --save           Save serialised data to folder 'data/'
+```
+
+## AVRO Deserialiser
+```
+usage: avro_deser.py [-h] [--config CONFIG]
+
+AVRO deserialiser
+
+options:
+  -h, --help       show this help message and exit
+  --config CONFIG  Configuration file to access the Schema Registry cluster (default 'config/test.ini')
+```
+
+## Running the demo (serialiser):
+- Run the shell script: ```./demo.sh {qty}```
+- Where `qty` (Optional):
   - Number of random input messages to be generated using the schemas/weather.avro schema
-  - X >= 1 (default is 1)
+  - qty >= 1 (default is 1)
 
 Example:
 ```
 % ./demo.sh 1
 
-*** Avro weather schema ***
+Avro weather schema:
 {
     "name": "Weather",
     "namespace": "com.example",
@@ -66,27 +80,29 @@ Example:
     ]
 }
 
-Press any key to see 1 random input message(s) based on the Avro weather schema...
+Press any key to see 1 random input message(s) based on the Avro weather schema and stats...
 
-{"station": "tivtALIh7", "station_id": 66385658, "timestamp": 1677077421574, "temp": 453.69, "active": false}
+{"station": "m2ygG", "station_id": 64310212, "timestamp": 1691490475617, "temp": 774.0, "active": true}
+b'\x00\x00\x01\x86\xc0\nm2ygG\x88\xaf\xaa=\xc2\xf9\x82\xcb\xbab\x00\x00\x00\x00\x000\x88@\x01'
 
-Press any key to see Avro serialised output...
-
-Objavro.codenullavro.schema�{"type": "record", "doc": "My weather station", "name": "com.example.Weather", "fields": [{"name": "station", "type": "string"}, {"name": "station_id", "type": "long"}, {"logicalType": "timestamp-millis", "name": "timestamp", "type": "long"}, {"name": "temp", "type": "double"}, {"name": "active", "type": "boolean"}]}���f������w�y:tivtALIh7�ۧ?��ԙ�aףp=
-[|@���f������w�y
-
-Press any key to compare raw input with Avro serialised output...
 
 Record(s) serialised: 1
 
 Input records:
-- Total: 110 bytes
-- Average per record: 110.00 bytes
+- Total: 103 bytes
+- Average per record: 103.00 bytes
 
 Avro serialised/encoded records:
-- Total: 417 bytes
-- Record average size with Avro schema: 417.00 bytes
-  > Compress ratio: -279.09%
-- Record average size without Avro schema: 29.00 bytes
-  > Compress ratio: 73.64%
+- Total: 30 bytes
+  > Compress ratio: 70.87%
+```
+
+## Running the demo (deserialiser):
+- Run the python script: ```python3 avro_deser.py```
+
+Example:
+```
+File: data/weather.avro-1691493709833374.bin
+b'\x00\x00\x01\x86\xc0\nm2ygG\x88\xaf\xaa=\xc2\xf9\x82\xcb\xbab\x00\x00\x00\x00\x000\x88@\x01'
+{"station": "m2ygG", "station_id": 64310212, "timestamp": 1691490475617, "temp": 774.0, "active": true}
 ```
