@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message Proto {
+    uint64 user_id = 1;
+    uint64 timestamp = 2;
+    uint32 zipcode = 3;
+    uint32 age = 4;
+    uint32 house_number = 5;
+}

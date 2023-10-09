@@ -19,6 +19,13 @@ if __name__ == "__main__":
         help=f"Configuration file to access the Schema Registry cluster (default 'config/test.ini')",
         default=os.path.join("config", "test.ini"),
     )
+    parser.add_argument(
+        "--schema",
+        dest="schema",
+        type=str,
+        help=f"avro Schema file path",
+        default=None,
+    )
     args = parser.parse_args()
 
     # Schema Registry client
@@ -29,6 +36,7 @@ if __name__ == "__main__":
     # AVRO Deserialiser object
     avro_deserializer = AvroDeserializer(
         schema_registry_client,
+        schema_str=None if args.schema is None else open(args.schema, "r").read(),
     )
 
     # Read messages

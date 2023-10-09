@@ -1,3 +1,4 @@
+import os
 import uuid
 import random
 import string
@@ -100,3 +101,45 @@ def generate_input(avro_schema: dict) -> dict:
                 result.update({field_name: data})
 
     return result
+
+def ser_argparse(schema_type: str = "avro"):
+    parser = argparse.ArgumentParser(description=f"{schema_type} serialiser")
+    parser.add_argument(
+        "--qty",
+        dest="records",
+        type=int_min,
+        help=f"Quantity of input records to be randomised (based on the {schema_type} schema)",
+        default=1,
+    )
+    parser.add_argument(
+        "--schema",
+        dest="schema",
+        type=str,
+        help=f"{schema_type} schema file path",
+        default=os.path.join("schemas", "weather.avro"),
+    )
+    parser.add_argument(
+        "--stats",
+        dest="stats",
+        help=f"Display statistics",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--print",
+        dest="print",
+        help=f"Print messages in the console",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--save",
+        dest="save",
+        help=f"Save serialised data to folder 'data/'",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--config",
+        dest="config",
+        help=f"Configuration file to access the Schema Registry cluster (default 'config/test.ini')",
+        default=os.path.join("config", "test.ini"),
+    )
+    return parser.parse_args()

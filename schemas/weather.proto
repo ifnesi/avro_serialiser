@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message Proto {
+    string station = 1;
+    uint64 station_id = 2;
+    uint64 timestamp = 3;
+    double temp = 4;
+    bool active = 5;
+}

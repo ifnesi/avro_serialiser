@@ -1,63 +1,25 @@
 import os
 import json
 import time
-import argparse
 import configparser
 
+from importlib import import_module
 from confluent_kafka.serialization import (
     SerializationContext,
     MessageField,
 )
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroSerializer
+from confluent_kafka.schema_registry.protobuf import ProtobufSerializer
 
-from utils import int_min, generate_input
+from utils import generate_input, ser_argparse
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="AVRO serialiser")
-    parser.add_argument(
-        "--qty",
-        dest="records",
-        type=int_min,
-        help=f"Quantity of input records to be randomised (based on the Avro schema)",
-        default=1,
-    )
-    parser.add_argument(
-        "--schema",
-        dest="schema",
-        type=str,
-        help=f"Avro schema file path",
-        default=os.path.join("schemas", "weather.avro"),
-    )
-    parser.add_argument(
-        "--stats",
-        dest="stats",
-        help=f"Display statistics",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--print",
-        dest="print",
-        help=f"Print messages in the console",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--save",
-        dest="save",
-        help=f"Save serialised data to folder 'data/'",
-        action="store_true",
-    )
-    parser.add_argument(
-        "--config",
-        dest="config",
-        help=f"Configuration file to access the Schema Registry cluster (default 'config/test.ini')",
-        default=os.path.join("config", "test.ini"),
-    )
-    args = parser.parse_args()
+    args = ser_argparse(schema_type="avro")
 
     # Read schema file
-    schema_base_name = os.path.basename(args.schema)
+    schema_folder, schema_base_name = os.path.split(args.schema)
     with open(args.schema, "r") as f:
         schema = json.loads(f.read())
         schema_str = json.dumps(schema)
@@ -73,9 +35,21 @@ if __name__ == "__main__":
         schema_str,
     )
 
+    # Protobuf Serialiser object
+    schema_name, _ = os.path.splitext(schema_base_name)
+    schema_proto = import_module(f"{schema_folder}.{schema_name}_pb2")
+    protobuf_serializer = ProtobufSerializer(
+        schema_proto.Proto,
+        schema_registry_client,
+        {
+            "use.deprecated.format": False,
+        },
+    )
+
     # Generate messages
     len_message = 0
-    len_message_serialised = 0
+    len_message_serialised_avro = 0
+    len_message_serialised_proto = 0
     for i in range(args.records):
         message = generate_input(schema)
         message_str = json.dumps(message)
@@ -86,14 +60,23 @@ if __name__ == "__main__":
                 MessageField.VALUE,
             ),
         )
+        message_serialised_proto = protobuf_serializer(
+            schema_proto.Proto(**message),
+            SerializationContext(
+                f"{schema_base_name}-proto",
+                MessageField.VALUE,
+            ),
+        )
 
         if args.print:
             print(message_str)
-            print(f"{message_serialised}\n")
+            print(f"Avro: {message_serialised}")
+            print(f"Protobuf: {message_serialised_proto}\n")
 
         if args.stats:
             len_message += len(message_str.encode("utf-8"))
-            len_message_serialised += len(message_serialised)
+            len_message_serialised_avro += len(message_serialised)
+            len_message_serialised_proto += len(message_serialised_proto)
 
         if args.save:
             file_name = os.path.join(
@@ -105,12 +88,17 @@ if __name__ == "__main__":
                 f.write(message_serialised)
 
     if args.stats:
-        print(f"\nRecord(s) serialised: {args.records}")
+        print(f"\nRecord(s) Avro serialised: {args.records}")
         print(f"\nInput records:")
         print(f"- Total: {len_message} bytes")
         print(f"- Average per record: {len_message/args.records:0.2f} bytes")
         print(f"\nAvro serialised/encoded records:")
-        print(f"- Total: {len_message_serialised} bytes")
+        print(f"- Total: {len_message_serialised_avro} bytes")
         print(
-            f"  > Compress ratio: {100 * (1 - len_message_serialised / len_message):0.2f}%"
+            f"  > Compress ratio: {100 * (1 - len_message_serialised_avro / len_message):0.2f}%"
+        )
+        print(f"\nProtobuf serialised/encoded records:")
+        print(f"- Total: {len_message_serialised_proto} bytes")
+        print(
+            f"  > Compress ratio: {100 * (1 - len_message_serialised_proto / len_message):0.2f}%"
         )

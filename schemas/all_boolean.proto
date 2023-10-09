@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message Proto {
+    bool opt1 = 1;
+    bool opt2 = 2;
+    bool opt3 = 3;
+    bool opt4 = 4;
+    bool opt5 = 5;
+}
