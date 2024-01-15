@@ -146,7 +146,7 @@ def ser_argparse(schema_type: str = "avro"):
     parser.add_argument(
         "--config",
         dest="config",
-        help=f"Configuration file to access the Schema Registry cluster (default 'config/test.ini')",
+        help=f"Configuration file to access the Schema Registry cluster (default 'config/example.ini')",
         default=os.path.join("config", "example.ini"),
     )
     return parser.parse_args()
