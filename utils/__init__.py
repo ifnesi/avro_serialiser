@@ -102,6 +102,7 @@ def generate_input(avro_schema: dict) -> dict:
 
     return result
 
+
 def ser_argparse(schema_type: str = "avro"):
     parser = argparse.ArgumentParser(description=f"{schema_type} serialiser")
     parser.add_argument(
@@ -125,6 +126,12 @@ def ser_argparse(schema_type: str = "avro"):
         action="store_true",
     )
     parser.add_argument(
+        "--source_folder",
+        dest="source_folder",
+        help=f"Source folder where inputs messages are located",
+        default=None,
+    )
+    parser.add_argument(
         "--print",
         dest="print",
         help=f"Print messages in the console",
@@ -140,6 +147,6 @@ def ser_argparse(schema_type: str = "avro"):
         "--config",
         dest="config",
         help=f"Configuration file to access the Schema Registry cluster (default 'config/test.ini')",
-        default=os.path.join("config", "test.ini"),
+        default=os.path.join("config", "example.ini"),
     )
     return parser.parse_args()

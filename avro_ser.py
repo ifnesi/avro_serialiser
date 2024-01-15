@@ -3,6 +3,7 @@ import json
 import time
 import configparser
 
+from glob import glob
 from importlib import import_module
 from confluent_kafka.serialization import (
     SerializationContext,
@@ -37,22 +38,40 @@ if __name__ == "__main__":
 
     # Protobuf Serialiser object
     schema_name, _ = os.path.splitext(schema_base_name)
-    schema_proto = import_module(f"{schema_folder}.{schema_name}_pb2")
-    protobuf_serializer = ProtobufSerializer(
-        schema_proto.Proto,
-        schema_registry_client,
-        {
-            "use.deprecated.format": False,
-        },
-    )
+
+    try:
+        schema_proto = import_module(f"{schema_folder}.{schema_name}_pb2")
+        protobuf_serializer = ProtobufSerializer(
+            schema_proto.Proto,
+            schema_registry_client,
+            {
+                "use.deprecated.format": False,
+            },
+        )
+    except Exception:
+        schema_proto = None
+        protobuf_serializer = None
 
     # Generate messages
     len_message = 0
     len_message_serialised_avro = 0
     len_message_serialised_proto = 0
-    for i in range(args.records):
-        message = generate_input(schema)
-        message_str = json.dumps(message)
+
+    if args.source_folder is not None:
+        is_range = False
+        list_data = glob(f"{args.source_folder}/*")
+    else:
+        is_range = True
+        list_data = range(args.records)
+
+    for item in list_data:
+        if is_range:
+            message = generate_input(schema)
+            message_str = json.dumps(message)
+        else:
+            message_str = open(item, "r").read()
+            message = json.loads(message_str)
+
         message_serialised = avro_serializer(
             message,
             SerializationContext(
@@ -60,13 +79,17 @@ if __name__ == "__main__":
                 MessageField.VALUE,
             ),
         )
-        message_serialised_proto = protobuf_serializer(
-            schema_proto.Proto(**message),
-            SerializationContext(
-                f"{schema_base_name}-proto",
-                MessageField.VALUE,
-            ),
-        )
+
+        try:
+            message_serialised_proto = protobuf_serializer(
+                schema_proto.Proto(**message),
+                SerializationContext(
+                    f"{schema_base_name}-proto",
+                    MessageField.VALUE,
+                ),
+            )
+        except Exception:
+            message_serialised_proto = ""
 
         if args.print:
             print(message_str)
